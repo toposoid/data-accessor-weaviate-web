@@ -13,7 +13,7 @@ services:
     tty: true
     environment:
       - TOPOSOID_WEAVIATE_HOST=172.30.0.2
-      - TOPOSOID_WEAVIATE_PORT=8081
+      - TOPOSOID_WEAVIATE_PORT=8080
       - TOPOSOID_WEAVIATE_SIMILARITY_THRESHOLD=0.85
     networks:
       app_net:
