@@ -1,5 +1,13 @@
----
 version: '3.4'
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/24
+
+
 services:
   data-accessor-weaviate-web:
     image: toposoid/data-accessor-weaviate-web:0.5-SNAPSHOT
