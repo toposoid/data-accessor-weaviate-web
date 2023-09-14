@@ -10,6 +10,7 @@ networks:
 services:
   data-accessor-weaviate-web:
     image: data-accessor-weaviate-web:0.5-SNAPSHOT
+    tty: true
     environment:
       - TOPOSOID_WEAVIATE_HOST=172.30.0.2
       - TOPOSOID_WEAVIATE_PORT=8081
