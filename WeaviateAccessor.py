@@ -76,20 +76,20 @@ class WeaviateAccessor():
             "sentenceType": featureVectorIdentifier.sentenceType,
             "lang": featureVectorIdentifier.lang
         }
-        identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId + str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+        identifer = featureVectorIdentifier.featureId
         self.client.data_object.create(
             data_obj,
             "SentenceFeature",
-            self.generateUuid("SentenceFeature", identifer),
+            self.generateUuid("SentenceFeature", identifer),            
             vector = featureVectorForUpdate.vector,
         )
         
     
     def upsert(self, featureVectorForUpdate: FeatureVectorForUpdate):
         featureVectorIdentifier = featureVectorForUpdate.featureVectorIdentifier
-        identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+        identifer = featureVectorIdentifier.featureId
         self.client.data_object.update(
-            uuid=self.generateUuid("SentenceFeature", identifer),
+            uuid=self.generateUuid("SentenceFeature", identifer),            
             class_name='SentenceFeature',
             data_object={
                 "propositionId": featureVectorIdentifier.propositionId,
@@ -128,7 +128,8 @@ class WeaviateAccessor():
     '''
 
     def searchById(self, featureVectorIdentifier: FeatureVectorIdentifier):
-        identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+        #identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+        identifer = featureVectorIdentifier.featureId
         rawQuery = '''
                     {
                         Get{
@@ -153,5 +154,6 @@ class WeaviateAccessor():
 
 
     def delete(self, featureVectorIdentifier: FeatureVectorIdentifier): 
-        identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+        #identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+        identifer = featureVectorIdentifier.featureId
         self.client.data_object.delete(self.generateUuid("SentenceFeature", identifer), "SentenceFeature",consistency_level="ONE")        
