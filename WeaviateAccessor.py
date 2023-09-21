@@ -19,6 +19,12 @@ import weaviate
 import os
 import uuid
 from model import FeatureVectorForUpdate, FeatureVectorIdentifier
+from logging import config
+config.fileConfig('logging.conf')
+import logging
+import time
+LOG = logging.getLogger(__name__)
+
 
 class WeaviateAccessor():
     client = None
@@ -153,7 +159,18 @@ class WeaviateAccessor():
             return [featureVectorIdentifier], [1.0]
 
 
-    def delete(self, featureVectorIdentifier: FeatureVectorIdentifier): 
-        #identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
-        identifer = featureVectorIdentifier.featureId
-        self.client.data_object.delete(self.generateUuid("SentenceFeature", identifer), "SentenceFeature",consistency_level="ONE")        
+    def delete(self, featureVectorIdentifier: FeatureVectorIdentifier):         
+        i = 0
+        while(len(self.searchById(featureVectorIdentifier)[0]) > 0):
+            #identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+            try:
+                identifer = featureVectorIdentifier.featureId
+                self.client.data_object.delete(self.generateUuid("SentenceFeature", identifer), "SentenceFeature",consistency_level="ONE")
+            except Exception as e:
+                LOG.error(e)
+                pass        
+            time.sleep(3)               
+            if i > 3:
+                break
+            i += 1
+
