@@ -75,6 +75,10 @@ class WeaviateAccessor():
     
 
     def insert(self, featureVectorForUpdate: FeatureVectorForUpdate):
+
+        if not self.client.schema.exists(class_name="SentenceFeature"):
+            self.createSchema()
+
         featureVectorIdentifier = featureVectorForUpdate.featureVectorIdentifier
         data_obj = {
             "propositionId": featureVectorIdentifier.propositionId,
@@ -91,7 +95,11 @@ class WeaviateAccessor():
         )
         
     
-    def upsert(self, featureVectorForUpdate: FeatureVectorForUpdate):
+    def update(self, featureVectorForUpdate: FeatureVectorForUpdate):
+
+        if not self.client.schema.exists(class_name="SentenceFeature"):
+            self.createSchema()
+
         featureVectorIdentifier = featureVectorForUpdate.featureVectorIdentifier
         identifer = featureVectorIdentifier.featureId
         self.client.data_object.update(
