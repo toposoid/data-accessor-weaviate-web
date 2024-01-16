@@ -288,6 +288,17 @@ class TestWeaviateAPI(object):
         assert "" in searchResult.statusInfo.message
         assert searchResult.ids[0].propositionId == "test-ss1"
 
+    def test_SingleEasySearch(self):     
+
+        response = self.client.post("/easySearch",
+                            headers={"Content-Type": "application/json"},
+                            json={"vector": self.vector, "num":10, "similarityThreshold":0.5})    
+        assert response.status_code == 200
+        searchResult = FeatureVectorSearchResult.parse_obj(response.json())
+        assert searchResult.statusInfo.status == "OK"
+        assert "" in searchResult.statusInfo.message
+        assert searchResult.ids[0].propositionId == "test-ss1"
+
 
     def test_SingleSearchNoResponse(self):     
 

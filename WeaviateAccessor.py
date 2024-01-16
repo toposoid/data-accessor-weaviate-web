@@ -128,7 +128,22 @@ class WeaviateAccessor():
                     ids.append(FeatureVectorIdentifier(propositionId = result['propositionId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang']))
                     similarities.append(similarity)
             return ids, similarities
-    
+
+    def easySearch(self, vector, num=20, similarityThreshold=0.85):
+        nearVector = {"vector": vector}
+        res = self.client.query.get("SentenceFeature", ["propositionId", "featureId", "sentenceType", "lang", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
+        if len(res["data"]['Get']['SentenceFeature']) == 0:
+            return [],[]
+        else:
+            ids = []
+            similarities = []
+            for result in res["data"]['Get']['SentenceFeature']:  
+                similarity  = result['_additional']['certainty']
+                if similarity > similarityThreshold:                  
+                    ids.append(FeatureVectorIdentifier(propositionId = result['propositionId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang']))
+                    similarities.append(similarity)
+            return ids, similarities
+
     '''
     def multiSearch(self, vectors, num=20):
         ids = []

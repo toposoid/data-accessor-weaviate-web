@@ -101,6 +101,13 @@ class SingleFeatureVectorForSearch(BaseModel):
     vector:List[float]
     num:int
 
+#For feature vector search requests
+class SingleFeatureVectorForEasySearch(BaseModel):
+    vector:List[float]
+    num:int
+    similarityThreshold:float
+
+
 #For feature vector search requests. Multiple vectors can be set.
 class MultiFeatureVectorForSearch(BaseModel):
     vectors:List[FeatureVectorForSearch]

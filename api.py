@@ -15,7 +15,7 @@
  '''
 
 from fastapi import FastAPI
-from model import FeatureVectorForUpdate, SingleFeatureVectorForSearch, FeatureVectorSearchResult, StatusInfo, MultiFeatureVectorForSearch, FeatureVectorIdentifier
+from model import FeatureVectorForUpdate, SingleFeatureVectorForSearch, FeatureVectorSearchResult, StatusInfo, SingleFeatureVectorForEasySearch, FeatureVectorIdentifier
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
@@ -82,6 +82,17 @@ def insert(featureVectorForUpdate:FeatureVectorForUpdate):
 def search(singleFeatureVectorForSearch:SingleFeatureVectorForSearch):
     try:
         ids, similarities = weaviateAccessor.search(singleFeatureVectorForSearch.vector, singleFeatureVectorForSearch.num)
+        return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
+    except Exception as e:
+        #Exception occurs when there is no search result for some reason
+        LOG.error(traceback.format_exc())
+        return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids=[], similarities=[], statusInfo=StatusInfo(status="ERROR", message=traceback.format_exc()))))
+
+@app.post("/easySearch",
+            summary='Find Single Feature Vector')
+def search(singleFeatureVectorForEasySearch:SingleFeatureVectorForEasySearch):
+    try:
+        ids, similarities = weaviateAccessor.easySearch(singleFeatureVectorForEasySearch.vector, singleFeatureVectorForEasySearch.num, singleFeatureVectorForEasySearch.similarityThreshold)
         return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
     except Exception as e:
         #Exception occurs when there is no search result for some reason
