@@ -4,6 +4,7 @@ This is a WEB API that works as a microservice within the Toposoid project.
 Toposoid is a knowledge base construction platform.(see [Toposoid Root Project](https://github.com/toposoid/toposoid.git))
 This microservice is a CUID wrapper for Weaviate (https://github.com/weaviate/weaviate).
 
+[![Test And Build](https://github.com/toposoid/data-accessor-weaviate-web/actions/workflows/action.yml/badge.svg)](https://github.com/toposoid/data-accessor-weaviate-web/actions/workflows/action.yml)
 
 ## Requirements
 * Docker version 20.10.x, or later
