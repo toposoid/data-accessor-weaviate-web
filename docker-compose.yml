@@ -1,21 +1,11 @@
 version: '3.4'
-networks:
-  app_net:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.30.0.0/24
 services:
   data-accessor-weaviate-web:
-    image: toposoid/data-accessor-weaviate-web:0.5-SNAPSHOT
+    image: toposoid/data-accessor-weaviate-web:0.5
     environment:
-      - TOPOSOID_WEAVIATE_HOST=172.30.0.2
+      - TOPOSOID_WEAVIATE_HOST=weaviate
       - TOPOSOID_WEAVIATE_PORT=8080
       - TOPOSOID_WEAVIATE_SIMILARITY_THRESHOLD=0.9
-    networks:
-      app_net:
-        ipv4_address: 172.30.0.3
     ports:
       - 9011:9011
     depends_on:

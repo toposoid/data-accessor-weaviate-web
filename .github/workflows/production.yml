@@ -10,7 +10,7 @@ env:
   PJ_ACTOR: toposoid
   PJ_REPO: data-accessor-weaviate-web
   PJ_BRANCH: main
-  PJ_VERSION: 0.4
+  PJ_VERSION: 0.5
 jobs:
   unit-test_data-accessor-weaviate-web:
     runs-on: ubuntu-20.04
