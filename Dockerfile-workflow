@@ -1,0 +1,13 @@
+FROM python:3.9
+
+WORKDIR /app
+ARG TARGET_BRANCH
+ENV DEPLOYMENT=local
+
+RUN apt-get update \
+&& apt-get -y install git \
+&& git clone https://github.com/toposoid/data-accessor-weaviate-web.git \
+&& cd data-accessor-weaviate-web \
+&& git fetch origin ${TARGET_BRANCH} \
+&& git checkout ${TARGET_BRANCH} \
+&& pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
