@@ -33,7 +33,7 @@ class WeaviateAccessor():
     def __init__(self) :
         self.client = weaviate.Client("http://" + os.environ["TOPOSOID_WEAVIATE_HOST"] + ":" + os.environ["TOPOSOID_WEAVIATE_PORT"])
 
-
+    '''
     def generateUuid(self, class_name: str, identifier: str,
                     test: str = 'teststrong') -> str:
         """ Generate a uuid based on an identifier
@@ -43,10 +43,10 @@ class WeaviateAccessor():
         :type class_name: str, required
         """
         test = 'overwritten'
-        id = uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier)
-        return str(id)
-
-
+        #id = uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier)        
+        #return str(id)
+        return identifier
+    '''
     def createSchema(self):
         self.client.schema.delete_all()
         class_obj = {
@@ -90,7 +90,8 @@ class WeaviateAccessor():
         self.client.data_object.create(
             data_obj,
             "SentenceFeature",
-            self.generateUuid("SentenceFeature", identifer),            
+            #self.generateUuid("SentenceFeature", identifer),            
+            identifer,
             vector = featureVectorForUpdate.vector,
         )
         
@@ -103,7 +104,8 @@ class WeaviateAccessor():
         featureVectorIdentifier = featureVectorForUpdate.featureVectorIdentifier
         identifer = featureVectorIdentifier.featureId
         self.client.data_object.update(
-            uuid=self.generateUuid("SentenceFeature", identifer),            
+            #uuid=self.generateUuid("SentenceFeature", identifer),            
+            uuid=identifer,
             class_name='SentenceFeature',
             data_object={
                 "propositionId": featureVectorIdentifier.propositionId,
@@ -175,7 +177,8 @@ class WeaviateAccessor():
                         }
                     }
                     '''
-        res = self.client.query.raw(rawQuery % (self.generateUuid("SentenceFeature", identifer)))
+        #res = self.client.query.raw(rawQuery % (self.generateUuid("SentenceFeature", identifer)))
+        res = self.client.query.raw(rawQuery % (identifer))
         if len(res["data"]['Get']['SentenceFeature']) == 0:
             return [], []
         else:
@@ -188,7 +191,8 @@ class WeaviateAccessor():
             #identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
             try:
                 identifer = featureVectorIdentifier.featureId
-                self.client.data_object.delete(self.generateUuid("SentenceFeature", identifer), "SentenceFeature",consistency_level="ONE")
+                #self.client.data_object.delete(self.generateUuid("SentenceFeature", identifer), "SentenceFeature",consistency_level="ONE")
+                self.client.data_object.delete(identifer, "SentenceFeature",consistency_level="ONE")
             except Exception as e:
                 LOG.error(e)
                 pass        
