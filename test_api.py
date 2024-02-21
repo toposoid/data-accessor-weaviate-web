@@ -25,6 +25,16 @@ class TestWeaviateAPI(object):
 
     client = TestClient(app)
     vector = list(np.random.rand(768))
+    ids = {
+        "test-ss1": "47ad6ccb-316f-4d68-a2f0-eb6f2a70a710", 
+        "test-ms1": "523da3a7-f772-4b00-8c59-e7e27cfe77eb",
+        "test-ms2": "7d771863-2fd2-47c1-8e5a-ff4a77d6e963",
+        "test-ms3": "79b08eb8-4651-4203-a1e0-49bd0dbeb7da",
+        "test-ms4": "26e48461-9bee-4b62-87b9-ace09ae57e80",
+        "test-ms5": "d595119e-045e-49aa-ac82-fbb66e80516c",
+        "test-empty": "14ccc264-51db-44e9-b331-c8118e9ca8be",
+        "test1": "e947244a-b35d-4457-86cf-28b86fabb959"        
+    }
 
     @classmethod
     def setup_class(cls):    
@@ -38,8 +48,8 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json"},
                         json={
                                 "featureVectorIdentifier":{
-                                    "propositionId": "test-ss1",
-                                    "featureId": "test-ss1",
+                                    "propositionId": cls.ids["test-ss1"],
+                                    "featureId": cls.ids["test-ss1"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
                                 "vector": cls.vector
@@ -64,8 +74,8 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json"},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "test-ms1",
-                                    "featureId": "test-ms1",
+                                    "propositionId": cls.ids["test-ms1"],
+                                    "featureId": cls.ids["test-ms1"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
                                 "vector": changeVector1
@@ -76,8 +86,8 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json"},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "test-ms2",
-                                    "featureId": "test-ms2",
+                                    "propositionId": cls.ids["test-ms2"],
+                                    "featureId": cls.ids["test-ms2"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
                                 "vector": changeVector2
@@ -88,8 +98,8 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json"},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "test-ms3",
-                                    "featureId": "test-ms3",
+                                    "propositionId": cls.ids["test-ms3"],
+                                    "featureId": cls.ids["test-ms3"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
                                 "vector": changeVector3
@@ -100,8 +110,8 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json"},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "test-ms4",
-                                    "featureId": "test-ms4",
+                                    "propositionId": cls.ids["test-ms4"],
+                                    "featureId": cls.ids["test-ms4"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
                                 "vector": changeVector3
@@ -112,8 +122,8 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json"},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "test-ms5",
-                                    "featureId": "test-ms5",
+                                    "propositionId": cls.ids["test-ms5"],
+                                    "featureId": cls.ids["test-ms5"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
                                 "vector": changeVector4
@@ -124,13 +134,13 @@ class TestWeaviateAPI(object):
         sleep(5)
     
 
-    def test_InsertEmptyVector(self):    
-        response = self.client.post("/insert",
+    def test_InsertEmptyVector(cls):    
+        response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "test-empty",
-                                    "featureId": "test-empty",
+                                    "propositionId": cls.ids["test-empty"],
+                                    "featureId": cls.ids["test-empty"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
                                 "vector": []
@@ -141,9 +151,9 @@ class TestWeaviateAPI(object):
         assert "new node has a vector with length 0" in statusInfo.message
 
 
-    def test_InsertEmptyId(self):    
+    def test_InsertEmptyId(cls):    
         
-        response = self.client.post("/insert",
+        response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
@@ -151,13 +161,13 @@ class TestWeaviateAPI(object):
                                     "featureId": "hoge",
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
-                                "vector": self.vector
+                                "vector": cls.vector
                             })
         assert response.status_code == 200
         statusInfo = StatusInfo.parse_obj(response.json())
         assert statusInfo.status == "ERROR"
 
-        response = self.client.post("/insert",
+        response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
@@ -165,13 +175,13 @@ class TestWeaviateAPI(object):
                                     "featureId": "",
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
-                                "vector": self.vector
+                                "vector": cls.vector
                             })
         assert response.status_code == 200
         statusInfo = StatusInfo.parse_obj(response.json())
         assert statusInfo.status == "ERROR"
 
-        response = self.client.post("/insert",
+        response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
@@ -179,13 +189,13 @@ class TestWeaviateAPI(object):
                                     "featureId": "hoge",
                                     "sentenceType": 3,
                                     "lang": "ja_JP"}, 
-                                "vector": self.vector
+                                "vector": cls.vector
                             })
         assert response.status_code == 200
         statusInfo = StatusInfo.parse_obj(response.json())
         assert statusInfo.status == "ERROR"
 
-        response = self.client.post("/insert",
+        response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
@@ -193,13 +203,13 @@ class TestWeaviateAPI(object):
                                     "featureId": "hoge",
                                     "sentenceType": "",
                                     "lang": "ja_JP"}, 
-                                "vector": self.vector
+                                "vector": cls.vector
                             })
         assert response.status_code == 200
         statusInfo = StatusInfo.parse_obj(response.json())
         assert statusInfo.status == "ERROR"
 
-        response = self.client.post("/insert",
+        response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
@@ -207,13 +217,13 @@ class TestWeaviateAPI(object):
                                     "featureId": "hoge",
                                     "sentenceType": "",
                                     "lang": ""}, 
-                                "vector": self.vector
+                                "vector": cls.vector
                             })
         assert response.status_code == 200
         statusInfo = StatusInfo.parse_obj(response.json())
         assert statusInfo.status == "ERROR"
 
-        response = self.client.post("/insert",
+        response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
@@ -221,7 +231,7 @@ class TestWeaviateAPI(object):
                                     "featureId": "hoge",
                                     "sentenceType": "",
                                     "lang": "fr_FR"}, 
-                                "vector": self.vector
+                                "vector": cls.vector
                             })
         assert response.status_code == 200
         statusInfo = StatusInfo.parse_obj(response.json())
@@ -229,28 +239,28 @@ class TestWeaviateAPI(object):
 
 
 
-    def test_InsertAndDelete(self):  
+    def test_InsertAndDelete(cls):  
         
-        response = self.client.post("/insert",
+        response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "test1",
-                                    "featureId": "test1",
+                                    "propositionId": cls.ids["test1"],
+                                    "featureId": cls.ids["test1"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"}, 
-                                "vector": self.vector
+                                "vector": cls.vector
                             })
         assert response.status_code == 200
         statusInfo = StatusInfo.parse_obj(response.json())
         assert statusInfo.status == "OK"
         assert "" in statusInfo.message
         
-        response = self.client.post("/delete",
+        response = cls.client.post("/delete",
                             headers={"Content-Type": "application/json"},
                             json={
-                                    "propositionId": "test1",
-                                    "featureId": "test1",
+                                    "propositionId": cls.ids["test1"],
+                                    "featureId": cls.ids["test1"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"
                                 })
@@ -260,11 +270,11 @@ class TestWeaviateAPI(object):
         assert statusInfo.status == "OK"
         assert "" in statusInfo.message
 
-        response = self.client.post("/searchById",
+        response = cls.client.post("/searchById",
                             headers={"Content-Type": "application/json"},
                             json={
-                                    "propositionId": "test1",
-                                    "featureId": "test1",
+                                    "propositionId": cls.ids["test1"],
+                                    "featureId": cls.ids["test1"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"
                                 })                                
@@ -277,32 +287,32 @@ class TestWeaviateAPI(object):
 
 
 
-    def test_SingleSearch(self):     
+    def test_SingleSearch(cls):     
 
-        response = self.client.post("/search",
+        response = cls.client.post("/search",
                             headers={"Content-Type": "application/json"},
-                            json={"vector": self.vector, "num":10})    
+                            json={"vector": cls.vector, "num":10})    
         assert response.status_code == 200
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
         assert "" in searchResult.statusInfo.message
-        assert searchResult.ids[0].propositionId == "test-ss1"
+        assert searchResult.ids[0].propositionId == cls.ids["test-ss1"]
 
-    def test_SingleEasySearch(self):     
+    def test_SingleEasySearch(cls):     
 
-        response = self.client.post("/easySearch",
+        response = cls.client.post("/easySearch",
                             headers={"Content-Type": "application/json"},
-                            json={"vector": self.vector, "num":10, "similarityThreshold":0.5})    
+                            json={"vector": cls.vector, "num":10, "similarityThreshold":0.5})    
         assert response.status_code == 200
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
         assert "" in searchResult.statusInfo.message
-        assert searchResult.ids[0].propositionId == "test-ss1"
+        assert searchResult.ids[0].propositionId == cls.ids["test-ss1"]
 
 
-    def test_SingleSearchNoResponse(self):     
+    def test_SingleSearchNoResponse(cls):     
 
-        response = self.client.post("/search",
+        response = cls.client.post("/search",
                             headers={"Content-Type": "application/json"},
                             json={"vector": list(np.random.rand(768)), "num":1})    
         assert response.status_code == 200
@@ -310,16 +320,16 @@ class TestWeaviateAPI(object):
         assert len(searchResult.ids) == 0
 
     '''
-    def test_MultiSearch(self):     
+    def test_MultiSearch(cls):     
 
-        change3 = self.vector[3:]
+        change3 = cls.vector[3:]
         changeVector1 = [0.1, 0.2, 0.2]        
         changeVector1[len(changeVector1):len(changeVector1)] = change3
 
         changeVector3 = [0.1, 0.2, 0.4]        
         changeVector3[len(changeVector3):len(changeVector3)] = change3
 
-        response = self.client.post("/multiSearch",
+        response = cls.client.post("/multiSearch",
                             headers={"Content-Type": "application/json"},
                             json={"vectors": [{"vector":changeVector1}, {"vector":changeVector3}], "num":10})    
         assert response.status_code == 200
@@ -330,13 +340,13 @@ class TestWeaviateAPI(object):
         assert sorted(ids) == ['test-ms1', 'test-ms3', 'test-ms4', 'test-ms5']
     '''     
 
-    def test_SearchById(self):     
+    def test_SearchById(cls):     
 
-        response = self.client.post("/searchById",
+        response = cls.client.post("/searchById",
                             headers={"Content-Type": "application/json"},
                             json={
-                                    "propositionId": "test-ss1",
-                                    "featureId": "test-ss1",
+                                    "propositionId": cls.ids["test-ss1"],
+                                    "featureId": cls.ids["test-ss1"],
                                     "sentenceType": 1,
                                     "lang": "ja_JP"
                                 })                             
@@ -344,9 +354,9 @@ class TestWeaviateAPI(object):
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
         assert "" in searchResult.statusInfo.message
-        assert searchResult.ids[0].propositionId == "test-ss1"
+        assert searchResult.ids[0].propositionId == cls.ids["test-ss1"]
 
-    def test_ActualDataRemove(self):     
+    def test_ActualDataRemove(cls):     
         
         vector = list(np.random.rand(768))
         testIds = []
@@ -354,7 +364,7 @@ class TestWeaviateAPI(object):
         for i in range(5):
             id = str(uuid.uuid1())
             testIds.append(id)
-            response = self.client.post("/insert",
+            response = cls.client.post("/insert",
                             headers={"Content-Type": "application/json"},
                             json={
                                  "featureVectorIdentifier":{
@@ -367,7 +377,7 @@ class TestWeaviateAPI(object):
             assert response.status_code == 200
         sleep(5)
         for id in testIds:
-            response = self.client.post("/searchById",
+            response = cls.client.post("/searchById",
                                 headers={"Content-Type": "application/json"},
                                 json={
                                     "propositionId": id,
@@ -383,7 +393,7 @@ class TestWeaviateAPI(object):
             assert searchResult.ids[0].propositionId == id
 
         for id in testIds:
-            response = self.client.post("/delete",
+            response = cls.client.post("/delete",
                                 headers={"Content-Type": "application/json"},
                                 json={
                                     "propositionId": id,
@@ -398,7 +408,7 @@ class TestWeaviateAPI(object):
         
         sleep(5)
         for id in testIds:
-            response = self.client.post("/searchById",
+            response = cls.client.post("/searchById",
                                 headers={"Content-Type": "application/json"},
                                 json={
                                     "propositionId": id,
