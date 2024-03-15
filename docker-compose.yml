@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   data-accessor-weaviate-web:
-    image: toposoid/data-accessor-weaviate-web:0.5
+    image: toposoid/data-accessor-weaviate-web:0.6-SNAPSHOT
     environment:
       - TOPOSOID_WEAVIATE_HOST=weaviate
       - TOPOSOID_WEAVIATE_PORT=8080
