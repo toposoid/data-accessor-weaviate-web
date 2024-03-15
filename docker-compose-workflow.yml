@@ -1,7 +1,7 @@
 version: '3'
 services:
   data-accessor-weaviate-web:
-    image: data-accessor-weaviate-web:0.5
+    image: data-accessor-weaviate-web:0.6-SNAPSHOT
     tty: true
     environment:
       - TOPOSOID_WEAVIATE_HOST=weaviate
