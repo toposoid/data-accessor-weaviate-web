@@ -6,6 +6,7 @@ services:
       - TOPOSOID_WEAVIATE_HOST=weaviate
       - TOPOSOID_WEAVIATE_PORT=8080
       - TOPOSOID_WEAVIATE_SIMILARITY_THRESHOLD=0.9
+      - TOPOSOID_DATA_ACCESSOR_PORT=9011
     ports:
       - 9011:9011
     depends_on:
