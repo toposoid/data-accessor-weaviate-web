@@ -42,7 +42,7 @@ class TestWeaviateAPI(object):
     def setup_class(cls):    
 
         response = cls.client.post("/createSchema",
-                                   headers={"Content-Type": "application/json"})
+                                   headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState})
         #print(StatusInfo.parse_obj(response.json()))
         
         
