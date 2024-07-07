@@ -155,3 +155,5 @@ def searchById(featureVectorIdentifier: FeatureVectorIdentifier, X_TOPOSOID_TRAN
     except Exception as e:
         LOG.error(formatMessageForLogger(traceback.format_exc(), transversalState.username),extra={"tab":"\t"})
         return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids=[], similarities=[], statusInfo=StatusInfo(status="ERROR", message=traceback.format_exc()))))
+
+
