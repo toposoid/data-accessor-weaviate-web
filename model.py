@@ -123,3 +123,6 @@ class FeatureVectorSearchResult(BaseModel):
     ids:List[FeatureVectorIdentifier]
     similarities:List[float]
     statusInfo:StatusInfo
+
+class TransversalState(BaseModel):
+    username:str
