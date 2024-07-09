@@ -19,7 +19,7 @@ from model import FeatureVectorForUpdate, SingleFeatureVectorForSearch, FeatureV
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
-
+import yaml
 import traceback
 from WeaviateAccessor import WeaviateAccessor
 from middleware import ErrorHandlingMiddleware
@@ -27,14 +27,14 @@ from typing import Optional
 from utils import formatMessageForLogger
 
 from logging import config
-config.fileConfig('logging.conf')
+config.dictConfig(yaml.load(open("logging.yml", encoding="utf-8").read(), Loader=yaml.SafeLoader))
 import logging
 LOG = logging.getLogger(__name__)
 
 
 app = FastAPI(
     title="data-accessor-weaviate-web",
-    version="0.5-SNAPSHOT"
+    version="0.6-SNAPSHOT"
 )
 app.add_middleware(ErrorHandlingMiddleware)
 weaviateAccessor = WeaviateAccessor()
