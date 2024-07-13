@@ -2,7 +2,7 @@ version: 1
 formatters:
   tsvFormatter:    
     format: "%(asctime)s\t%(levelname)s\t%(name)s\t%(message)s\t[TOPOSOID-APP]"
-    datefmt: '%Y/%m/%d %I:%M:%S'
+    datefmt: '%Y-%m-%d %I:%M:%S'
 handlers:
   console:
     class : logging.StreamHandler
