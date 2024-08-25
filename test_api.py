@@ -25,7 +25,7 @@ from fastapi.encoders import jsonable_encoder
 class TestWeaviateAPI(object):
 
     client = TestClient(app)
-    transversalState = str(jsonable_encoder(TransversalState(username="guest")))
+    transversalState = str(jsonable_encoder(TransversalState(userId="test-user", username="guest", roleId=0, csrfToken = "")))
     vector = list(np.random.rand(768))
     ids = {
         "test-ss1": "47ad6ccb-316f-4d68-a2f0-eb6f2a70a710", 
