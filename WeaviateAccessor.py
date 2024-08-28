@@ -99,8 +99,11 @@ class WeaviateAccessor():
                 )
                 break
             except ObjectAlreadyExistsError:
-                pass        
-    
+                if i > 1:
+                    raise ObjectAlreadyExistsError
+                else:
+                    pass
+                            
     def update(self, featureVectorForUpdate: FeatureVectorForUpdate):
 
         if not self.client.schema.exists(class_name="SentenceFeature"):
