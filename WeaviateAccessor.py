@@ -16,6 +16,7 @@
  '''
 
 import weaviate
+from weaviate.exceptions import ObjectAlreadyExistsError
 import os
 import uuid
 from model import FeatureVectorForUpdate, FeatureVectorIdentifier
@@ -87,14 +88,18 @@ class WeaviateAccessor():
             "lang": featureVectorIdentifier.lang
         }
         identifer = featureVectorIdentifier.featureId
-        self.client.data_object.create(
-            data_obj,
-            "SentenceFeature",
-            #self.generateUuid("SentenceFeature", identifer),            
-            identifer,
-            vector = featureVectorForUpdate.vector,
-        )
-        
+        #Try 3 times because ObjectAlreadyExistsError may occur with unregistered uuid
+        for i in range(3):
+            try:
+                self.client.data_object.create(
+                    data_obj,
+                    "SentenceFeature",
+                    identifer,
+                    vector = featureVectorForUpdate.vector,
+                )
+                break
+            except ObjectAlreadyExistsError:
+                pass        
     
     def update(self, featureVectorForUpdate: FeatureVectorForUpdate):
 
