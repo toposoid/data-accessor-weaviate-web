@@ -88,8 +88,8 @@ class WeaviateAccessor():
             "lang": featureVectorIdentifier.lang
         }
         identifer = featureVectorIdentifier.featureId
-        #Try 3 times because ObjectAlreadyExistsError may occur with unregistered uuid
-        for i in range(3):
+        #Try 5 times because ObjectAlreadyExistsError may occur with unregistered uuid
+        for i in range(5):
             try:
                 self.client.data_object.create(
                     data_obj,
@@ -99,7 +99,7 @@ class WeaviateAccessor():
                 )
                 break
             except ObjectAlreadyExistsError:
-                if i > 1:
+                if i > 5:
                     raise ObjectAlreadyExistsError
                 else:
                     pass
