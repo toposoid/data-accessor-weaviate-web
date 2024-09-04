@@ -96,6 +96,7 @@ def search(singleFeatureVectorForSearch:SingleFeatureVectorForSearch, X_TOPOSOID
     try:        
         ids, similarities = weaviateAccessor.search(singleFeatureVectorForSearch.vector, singleFeatureVectorForSearch.num)
         response = JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
+        LOG.info(formatMessageForLogger(",".join(ids), ",".join(similarities)))
         LOG.info(formatMessageForLogger("Searching Feature Vector completed.", transversalState.userId))   
         return response
     except Exception as e:
