@@ -96,7 +96,8 @@ def search(singleFeatureVectorForSearch:SingleFeatureVectorForSearch, X_TOPOSOID
     try:        
         ids, similarities = weaviateAccessor.search(singleFeatureVectorForSearch.vector, singleFeatureVectorForSearch.num)
         response = JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
-        LOG.info(formatMessageForLogger(",".join(ids), ",".join(similarities)))
+        featureIds = list(map(lambda x: x.featureId, ids))
+        LOG.info(formatMessageForLogger("id:" + str(featureIds) + " similarity:" + str(similarities), transversalState.userId))
         LOG.info(formatMessageForLogger("Searching Feature Vector completed.", transversalState.userId))   
         return response
     except Exception as e:
@@ -111,6 +112,8 @@ def search(singleFeatureVectorForEasySearch:SingleFeatureVectorForEasySearch, X_
     try:        
         ids, similarities = weaviateAccessor.easySearch(singleFeatureVectorForEasySearch.vector, singleFeatureVectorForEasySearch.num, singleFeatureVectorForEasySearch.similarityThreshold)
         response = JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
+        featureIds = list(filter(lambda x: x.featureId, ids))
+        LOG.info(formatMessageForLogger("id:" + str(featureIds) + " similarity:" + str(similarities), transversalState.userId))
         LOG.info(formatMessageForLogger("Searching Feature Vector completed.", transversalState.userId))   
         return response
     except Exception as e:
