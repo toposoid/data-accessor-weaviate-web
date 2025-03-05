@@ -18,7 +18,7 @@ from fastapi import Request, Response, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 import traceback
-from model import StatusInfo
+from ToposoidCommon.model import StatusInfo
 from fastapi.encoders import jsonable_encoder
 import logging
 LOG = logging.getLogger(__name__)

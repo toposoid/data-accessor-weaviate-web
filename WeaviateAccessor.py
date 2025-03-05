@@ -18,14 +18,10 @@
 import weaviate
 from weaviate.exceptions import ObjectAlreadyExistsError
 import os
-import uuid
-from model import FeatureVectorForUpdate, FeatureVectorIdentifier
-from logging import config
-config.fileConfig('logging.conf')
-import logging
 import time
-LOG = logging.getLogger(__name__)
-
+from ToposoidCommon.model import FeatureVectorForUpdate, FeatureVectorIdentifier,TransversalState
+import ToposoidCommon as tc
+LOG = tc.LogUtils(__name__)
 
 class WeaviateAccessor():
     client = None
@@ -34,28 +30,14 @@ class WeaviateAccessor():
     def __init__(self) :
         self.client = weaviate.Client("http://" + os.environ["TOPOSOID_WEAVIATE_HOST"] + ":" + os.environ["TOPOSOID_WEAVIATE_PORT"])
 
-    '''
-    def generateUuid(self, class_name: str, identifier: str,
-                    test: str = 'teststrong') -> str:
-        """ Generate a uuid based on an identifier
-        :param identifier: characters used to generate the uuid
-        :type identifier: str, required
-        :param class_name: classname of the object to create a uuid for
-        :type class_name: str, required
-        """
-        test = 'overwritten'
-        #id = uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier)        
-        #return str(id)
-        return identifier
-    '''
     def createSchema(self):
         self.client.schema.delete_all()
         class_obj = {
-            "class": "SentenceFeature",
+            "class": "ToposoidFeature",
             "vectorizer": "none", # we are providing the vectors ourselves through our SBERT model, so this field is none
             "properties": [
                 {
-                    "name": "propositionId",
+                    "name": "superiorId",
                     "dataType": ["text"],            
                 },
                 {
@@ -70,6 +52,10 @@ class WeaviateAccessor():
                     "name": "lang",
                     "dataType": ["text"],            
                 },
+                {
+                    "name": "superiorType",
+                    "dataType": ["int"],            
+                },
             ]
         }
         self.client.schema.create_class(class_obj)
@@ -77,15 +63,16 @@ class WeaviateAccessor():
 
     def insert(self, featureVectorForUpdate: FeatureVectorForUpdate):
 
-        if not self.client.schema.exists(class_name="SentenceFeature"):
+        if not self.client.schema.exists(class_name="ToposoidFeature"):
             self.createSchema()
 
         featureVectorIdentifier = featureVectorForUpdate.featureVectorIdentifier
         data_obj = {
-            "propositionId": featureVectorIdentifier.propositionId,
+            "superiorId": featureVectorIdentifier.superiorId,
             "featureId": featureVectorIdentifier.featureId,
             "sentenceType": featureVectorIdentifier.sentenceType,
-            "lang": featureVectorIdentifier.lang
+            "lang": featureVectorIdentifier.lang,
+            "superiorType": featureVectorIdentifier.superiorType
         }
         identifer = featureVectorIdentifier.featureId
         #Try 5 times because ObjectAlreadyExistsError may occur with unregistered uuid
@@ -93,7 +80,7 @@ class WeaviateAccessor():
             try:
                 self.client.data_object.create(
                     data_obj,
-                    "SentenceFeature",
+                    "ToposoidFeature",
                     identifer,
                     vector = featureVectorForUpdate.vector,
                 )
@@ -106,51 +93,52 @@ class WeaviateAccessor():
                             
     def update(self, featureVectorForUpdate: FeatureVectorForUpdate):
 
-        if not self.client.schema.exists(class_name="SentenceFeature"):
+        if not self.client.schema.exists(class_name="ToposoidFeature"):
             self.createSchema()
 
         featureVectorIdentifier = featureVectorForUpdate.featureVectorIdentifier
         identifer = featureVectorIdentifier.featureId
         self.client.data_object.update(
-            #uuid=self.generateUuid("SentenceFeature", identifer),            
+            #uuid=self.generateUuid("ToposoidFeature", identifer),            
             uuid=identifer,
-            class_name='SentenceFeature',
+            class_name='ToposoidFeature',
             data_object={
-                "propositionId": featureVectorIdentifier.propositionId,
+                "superiorId": featureVectorIdentifier.superiorId,
                 "featureId": featureVectorIdentifier.featureId,
                 "sentenceType": featureVectorIdentifier.sentenceType,
-                "lang": featureVectorIdentifier.lang
+                "lang": featureVectorIdentifier.lang,
+                "superiorType": featureVectorIdentifier.superiorType
             },
             vector=featureVectorForUpdate.vector,
         )
 
     def search(self, vector, num=20):
         nearVector = {"vector": vector}
-        res = self.client.query.get("SentenceFeature", ["propositionId", "featureId", "sentenceType", "lang", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
-        if len(res["data"]['Get']['SentenceFeature']) == 0:
+        res = self.client.query.get("ToposoidFeature", ["superiorId", "featureId", "sentenceType", "lang", "superiorType", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
+        if len(res["data"]['Get']['ToposoidFeature']) == 0:
             return [],[]
         else:
             ids = []
             similarities = []
-            for result in res["data"]['Get']['SentenceFeature']:  
+            for result in res["data"]['Get']['ToposoidFeature']:  
                 similarity  = result['_additional']['certainty']
                 if similarity > float(os.environ["TOPOSOID_WEAVIATE_SIMILARITY_THRESHOLD"]) :                  
-                    ids.append(FeatureVectorIdentifier(propositionId = result['propositionId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang']))
+                    ids.append(FeatureVectorIdentifier(superiorId = result['superiorId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang'], superiorType = result['superiorType']))
                     similarities.append(similarity)
             return ids, similarities
 
     def easySearch(self, vector, num=20, similarityThreshold=0.85):
         nearVector = {"vector": vector}
-        res = self.client.query.get("SentenceFeature", ["propositionId", "featureId", "sentenceType", "lang", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
-        if len(res["data"]['Get']['SentenceFeature']) == 0:
+        res = self.client.query.get("ToposoidFeature", ["superiorId", "featureId", "sentenceType", "lang", "superiorType", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
+        if len(res["data"]['Get']['ToposoidFeature']) == 0:
             return [],[]
         else:
             ids = []
             similarities = []
-            for result in res["data"]['Get']['SentenceFeature']:  
+            for result in res["data"]['Get']['ToposoidFeature']:  
                 similarity  = result['_additional']['certainty']
                 if similarity > similarityThreshold:                  
-                    ids.append(FeatureVectorIdentifier(propositionId = result['propositionId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang']))
+                    ids.append(FeatureVectorIdentifier(superiorId = result['superiorId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang'], superiorType = result['superiorType']))
                     similarities.append(similarity)
             return ids, similarities
 
@@ -167,45 +155,61 @@ class WeaviateAccessor():
     '''
 
     def searchById(self, featureVectorIdentifier: FeatureVectorIdentifier):
-        #identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+        #identifer = featureVectorIdentifier.superiorId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
         identifer = featureVectorIdentifier.featureId
         rawQuery = '''
                     {
                         Get{
-                            SentenceFeature(where: {
+                            ToposoidFeature(where: {
                                 path: ["id"],
                                 operator: ContainsAny,
                                 valueText: ["%s"]
                             }){
-                            propositionId,
+                            superiorId,
                             featureId,
                             sentenceType,
-                            lang
+                            lang,
+                            superiorType
                             }
                         }
                     }
                     '''
-        #res = self.client.query.raw(rawQuery % (self.generateUuid("SentenceFeature", identifer)))
+        #res = self.client.query.raw(rawQuery % (self.generateUuid("ToposoidFeature", identifer)))
         res = self.client.query.raw(rawQuery % (identifer))
-        if len(res["data"]['Get']['SentenceFeature']) == 0:
+        if len(res["data"]['Get']['ToposoidFeature']) == 0:
             return [], []
         else:
             return [featureVectorIdentifier], [1.0]
 
 
-    def delete(self, featureVectorIdentifier: FeatureVectorIdentifier):         
+    def delete(self, featureVectorIdentifier: FeatureVectorIdentifier, transversalState: TransversalState):         
         i = 0
         while(len(self.searchById(featureVectorIdentifier)[0]) > 0):
-            #identifer = featureVectorIdentifier.propositionId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+            #identifer = featureVectorIdentifier.superiorId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
             try:
                 identifer = featureVectorIdentifier.featureId
-                #self.client.data_object.delete(self.generateUuid("SentenceFeature", identifer), "SentenceFeature",consistency_level="ONE")
-                self.client.data_object.delete(identifer, "SentenceFeature",consistency_level="ONE")
+                #self.client.data_object.delete(self.generateUuid("ToposoidFeature", identifer), "ToposoidFeature",consistency_level="ONE")
+                self.client.data_object.delete(identifer, "ToposoidFeature",consistency_level="ONE")
             except Exception as e:
-                LOG.error(e)
+                LOG.error(e, transversalState)
                 pass        
             time.sleep(3)               
             if i > 3:
                 break
             i += 1
 
+
+    '''
+    def generateUuid(self, class_name: str, identifier: str,
+                    test: str = 'teststrong') -> str:
+        """ Generate a uuid based on an identifier
+        :param identifier: characters used to generate the uuid
+        :type identifier: str, required
+        :param class_name: classname of the object to create a uuid for
+        :type class_name: str, required
+        """
+        test = 'overwritten'
+        #id = uuid.uuid5(uuid.NAMESPACE_DNS, class_name + identifier)        
+        #return str(id)
+        return identifier
+    '''
