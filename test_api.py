@@ -15,7 +15,7 @@
  '''
 from fastapi.testclient import TestClient
 from api import app
-from model import StatusInfo, FeatureVectorSearchResult, TransversalState
+from ToposoidCommon.model import StatusInfo, FeatureVectorSearchResult, TransversalState
 import numpy as np
 from time import sleep
 import pytest
@@ -50,10 +50,11 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                         json={
                                 "featureVectorIdentifier":{
-                                    "propositionId": cls.ids["test-ss1"],
+                                    "superiorId": cls.ids["test-ss1"],
                                     "featureId": cls.ids["test-ss1"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": cls.vector
                             }
                         )    
@@ -76,10 +77,11 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": cls.ids["test-ms1"],
+                                    "superiorId": cls.ids["test-ms1"],
                                     "featureId": cls.ids["test-ms1"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": changeVector1
                             }
                         )    
@@ -88,10 +90,11 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": cls.ids["test-ms2"],
+                                    "superiorId": cls.ids["test-ms2"],
                                     "featureId": cls.ids["test-ms2"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": changeVector2
                             }
                         )    
@@ -100,10 +103,11 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": cls.ids["test-ms3"],
+                                    "superiorId": cls.ids["test-ms3"],
                                     "featureId": cls.ids["test-ms3"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": changeVector3
                             }
                         )    
@@ -112,10 +116,11 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": cls.ids["test-ms4"],
+                                    "superiorId": cls.ids["test-ms4"],
                                     "featureId": cls.ids["test-ms4"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": changeVector3
                             }
                         )    
@@ -124,10 +129,11 @@ class TestWeaviateAPI(object):
                         headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                         json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": cls.ids["test-ms5"],
+                                    "superiorId": cls.ids["test-ms5"],
                                     "featureId": cls.ids["test-ms5"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": changeVector4
                             }
                         )                        
@@ -141,10 +147,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": cls.ids["test-empty"],
+                                    "superiorId": cls.ids["test-empty"],
                                     "featureId": cls.ids["test-empty"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": []
                             })
         assert response.status_code == 200
@@ -159,10 +166,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "",
+                                    "superiorId": "",
                                     "featureId": "hoge",
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -173,10 +181,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "hoge",
+                                    "superiorId": "hoge",
                                     "featureId": "",
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -187,10 +196,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "hoge",
+                                    "superiorId": "hoge",
                                     "featureId": "hoge",
                                     "sentenceType": 3,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -201,10 +211,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "hoge",
+                                    "superiorId": "hoge",
                                     "featureId": "hoge",
                                     "sentenceType": "",
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -215,10 +226,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "hoge",
+                                    "superiorId": "hoge",
                                     "featureId": "hoge",
                                     "sentenceType": "",
-                                    "lang": ""}, 
+                                    "lang": "",
+                                    "superiorType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -229,10 +241,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": "hoge",
+                                    "superiorId": "hoge",
                                     "featureId": "hoge",
                                     "sentenceType": "",
-                                    "lang": "fr_FR"}, 
+                                    "lang": "fr_FR",
+                                    "superiorType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -247,10 +260,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": cls.ids["test1"],
+                                    "superiorId": cls.ids["test1"],
                                     "featureId": cls.ids["test1"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -261,10 +275,11 @@ class TestWeaviateAPI(object):
         response = cls.client.post("/delete",
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
-                                    "propositionId": cls.ids["test1"],
+                                    "superiorId": cls.ids["test1"],
                                     "featureId": cls.ids["test1"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"
+                                    "lang": "ja_JP",
+                                    "superiorType": 0
                                 })
 
         assert response.status_code == 200
@@ -275,10 +290,11 @@ class TestWeaviateAPI(object):
         response = cls.client.post("/searchById",
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
-                                    "propositionId": cls.ids["test1"],
+                                    "superiorId": cls.ids["test1"],
                                     "featureId": cls.ids["test1"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"
+                                    "lang": "ja_JP",
+                                    "superiorType": 0
                                 })                                
         assert response.status_code == 200
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
@@ -298,7 +314,7 @@ class TestWeaviateAPI(object):
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
         assert "" in searchResult.statusInfo.message
-        assert searchResult.ids[0].propositionId == cls.ids["test-ss1"]
+        assert searchResult.ids[0].superiorId == cls.ids["test-ss1"]
 
     def test_SingleEasySearch(cls):     
 
@@ -309,7 +325,7 @@ class TestWeaviateAPI(object):
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
         assert "" in searchResult.statusInfo.message
-        assert searchResult.ids[0].propositionId == cls.ids["test-ss1"]
+        assert searchResult.ids[0].superiorId == cls.ids["test-ss1"]
 
 
     def test_SingleSearchNoResponse(cls):     
@@ -338,7 +354,7 @@ class TestWeaviateAPI(object):
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
         assert "" in searchResult.statusInfo.message
-        ids = list(set(list(map(lambda x: x.propositionId, searchResult.ids))))
+        ids = list(set(list(map(lambda x: x.superiorId, searchResult.ids))))
         assert sorted(ids) == ['test-ms1', 'test-ms3', 'test-ms4', 'test-ms5']
     '''     
 
@@ -347,16 +363,17 @@ class TestWeaviateAPI(object):
         response = cls.client.post("/searchById",
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
-                                    "propositionId": cls.ids["test-ss1"],
+                                    "superiorId": cls.ids["test-ss1"],
                                     "featureId": cls.ids["test-ss1"],
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"
+                                    "lang": "ja_JP",
+                                    "superiorType": 0
                                 })                             
         assert response.status_code == 200
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
         assert "" in searchResult.statusInfo.message
-        assert searchResult.ids[0].propositionId == cls.ids["test-ss1"]
+        assert searchResult.ids[0].superiorId == cls.ids["test-ss1"]
 
     def test_ActualDataRemove(cls):     
         
@@ -370,10 +387,11 @@ class TestWeaviateAPI(object):
                             headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                             json={
                                  "featureVectorIdentifier":{
-                                    "propositionId": id,
+                                    "superiorId": id,
                                     "featureId": id,
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"}, 
+                                    "lang": "ja_JP",
+                                    "superiorType": 0}, 
                                 "vector": vector
                             }) 
             assert response.status_code == 200
@@ -382,26 +400,28 @@ class TestWeaviateAPI(object):
             response = cls.client.post("/searchById",
                                 headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                                 json={
-                                    "propositionId": id,
+                                    "superiorId": id,
                                     "featureId": id,
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"
+                                    "lang": "ja_JP",
+                                    "superiorType": 0
                                 })                             
 
             assert response.status_code == 200
             searchResult = FeatureVectorSearchResult.parse_obj(response.json())
             assert searchResult.statusInfo.status == "OK"
             assert "" in searchResult.statusInfo.message            
-            assert searchResult.ids[0].propositionId == id
+            assert searchResult.ids[0].superiorId == id
 
         for id in testIds:
             response = cls.client.post("/delete",
                                 headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                                 json={
-                                    "propositionId": id,
+                                    "superiorId": id,
                                     "featureId": id,
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"
+                                    "lang": "ja_JP",
+                                    "superiorType": 0
                                 })                             
             assert response.status_code == 200
             statusInfo = StatusInfo.parse_obj(response.json())
@@ -413,10 +433,11 @@ class TestWeaviateAPI(object):
             response = cls.client.post("/searchById",
                                 headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
                                 json={
-                                    "propositionId": id,
+                                    "superiorId": id,
                                     "featureId": id,
                                     "sentenceType": 1,
-                                    "lang": "ja_JP"
+                                    "lang": "ja_JP",
+                                    "superiorType": 0
                                 })    
             assert response.status_code == 200
             searchResult = FeatureVectorSearchResult.parse_obj(response.json())
