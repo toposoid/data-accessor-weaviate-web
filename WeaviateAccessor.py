@@ -56,6 +56,10 @@ class WeaviateAccessor():
                     "name": "superiorType",
                     "dataType": ["int"],            
                 },
+                {
+                    "name": "nonSentenceType",
+                    "dataType": ["int"],            
+                },                
             ]
         }
         self.client.schema.create_class(class_obj)
@@ -72,7 +76,8 @@ class WeaviateAccessor():
             "featureId": featureVectorIdentifier.featureId,
             "sentenceType": featureVectorIdentifier.sentenceType,
             "lang": featureVectorIdentifier.lang,
-            "superiorType": featureVectorIdentifier.superiorType
+            "superiorType": featureVectorIdentifier.superiorType, 
+            "nonSentenceType": featureVectorIdentifier.nonSentenceType
         }
         identifer = featureVectorIdentifier.featureId
         #Try 5 times because ObjectAlreadyExistsError may occur with unregistered uuid
@@ -107,14 +112,15 @@ class WeaviateAccessor():
                 "featureId": featureVectorIdentifier.featureId,
                 "sentenceType": featureVectorIdentifier.sentenceType,
                 "lang": featureVectorIdentifier.lang,
-                "superiorType": featureVectorIdentifier.superiorType
+                "superiorType": featureVectorIdentifier.superiorType,
+                "nonSentenceType": featureVectorIdentifier.nonSentenceType
             },
             vector=featureVectorForUpdate.vector,
         )
 
     def search(self, vector, num=20):
         nearVector = {"vector": vector}
-        res = self.client.query.get("ToposoidFeature", ["superiorId", "featureId", "sentenceType", "lang", "superiorType", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
+        res = self.client.query.get("ToposoidFeature", ["superiorId", "featureId", "sentenceType", "lang", "superiorType", "nonSentenceType", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
         if len(res["data"]['Get']['ToposoidFeature']) == 0:
             return [],[]
         else:
@@ -123,13 +129,13 @@ class WeaviateAccessor():
             for result in res["data"]['Get']['ToposoidFeature']:  
                 similarity  = result['_additional']['certainty']
                 if similarity > float(os.environ["TOPOSOID_WEAVIATE_SIMILARITY_THRESHOLD"]) :                  
-                    ids.append(FeatureVectorIdentifier(superiorId = result['superiorId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang'], superiorType = result['superiorType']))
+                    ids.append(FeatureVectorIdentifier(superiorId = result['superiorId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang'],  superiorType = result['superiorType'], nonSentenceType = result['nonSentenceType']))
                     similarities.append(similarity)
             return ids, similarities
 
     def easySearch(self, vector, num=20, similarityThreshold=0.85):
         nearVector = {"vector": vector}
-        res = self.client.query.get("ToposoidFeature", ["superiorId", "featureId", "sentenceType", "lang", "superiorType", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
+        res = self.client.query.get("ToposoidFeature", ["superiorId", "featureId", "sentenceType", "lang", "superiorType", "nonSentenceType", "_additional {certainty}"]).with_limit(num).with_near_vector(nearVector).do()
         if len(res["data"]['Get']['ToposoidFeature']) == 0:
             return [],[]
         else:
@@ -138,7 +144,7 @@ class WeaviateAccessor():
             for result in res["data"]['Get']['ToposoidFeature']:  
                 similarity  = result['_additional']['certainty']
                 if similarity > similarityThreshold:                  
-                    ids.append(FeatureVectorIdentifier(superiorId = result['superiorId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang'], superiorType = result['superiorType']))
+                    ids.append(FeatureVectorIdentifier(superiorId = result['superiorId'], featureId = result['featureId'], sentenceType = result['sentenceType'], lang = result['lang'], superiorType = result['superiorType'], nonSentenceType = result['nonSentenceType']))
                     similarities.append(similarity)
             return ids, similarities
 
@@ -169,7 +175,8 @@ class WeaviateAccessor():
                             featureId,
                             sentenceType,
                             lang,
-                            superiorType
+                            superiorType,
+                            nonSentenceType
                             }
                         }
                     }
