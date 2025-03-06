@@ -205,6 +205,55 @@ class WeaviateAccessor():
                 break
             i += 1
 
+    def searchBySuperiorId(self, featureVectorIdentifier: FeatureVectorIdentifier):
+        #identifer = featureVectorIdentifier.superiorId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+        identifer = featureVectorIdentifier.superiorId
+        rawQuery = '''
+                    {
+                        Get{
+                            ToposoidFeature(where: {
+                                path: ["superiorId"],
+                                operator: ContainsAny,
+                                valueText: ["%s"]
+                            }){
+                            superiorId,
+                            featureId,
+                            sentenceType,
+                            lang,
+                            superiorType,
+                            nonSentenceType
+                            }
+                        }
+                    }
+                    '''
+        #res = self.client.query.raw(rawQuery % (self.generateUuid("ToposoidFeature", identifer)))
+        res = self.client.query.raw(rawQuery % (identifer))
+        if len(res["data"]['Get']['ToposoidFeature']) == 0:
+            return [], []
+        else:
+            return [featureVectorIdentifier], [1.0]
+
+    def deleteBySuperiorId(self, featureVectorIdentifier: FeatureVectorIdentifier, transversalState: TransversalState):         
+        i = 0        
+        while(len(self.searchBySuperiorId(featureVectorIdentifier)[0]) > 0):
+            #identifer = featureVectorIdentifier.superiorId + featureVectorIdentifier.featureId +str(featureVectorIdentifier.sentenceType) + featureVectorIdentifier.lang
+            try:
+                identifer = featureVectorIdentifier.superiorId
+                #self.client.data_object.delete(self.generateUuid("ToposoidFeature", identifer), "ToposoidFeature",consistency_level="ONE")
+                self.client.batch.delete_objects(class_name="ToposoidFeature", where={
+                            "path": ["superiorId"],
+                            "operator": "Equal",
+                            "valueText": identifer
+                })
+                #self.client.data_object.delete(identifer, "ToposoidFeature",consistency_level="ONE")
+            except Exception as e:
+                LOG.error(e, transversalState)
+                pass        
+            time.sleep(3)               
+            if i > 3:
+                break
+            i += 1
+
 
     '''
     def generateUuid(self, class_name: str, identifier: str,

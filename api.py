@@ -164,3 +164,29 @@ def searchById(featureVectorIdentifier: FeatureVectorIdentifier, X_TOPOSOID_TRAN
         return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids=[], similarities=[], statusInfo=StatusInfo(status="ERROR", message=traceback.format_exc()))))
 
 
+@app.post("/deleteBySuperiorId",
+            summary='Delete a Feature Vector')
+def deleteBySuperiorId(featureVectorIdentifier: FeatureVectorIdentifier, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:        
+        weaviateAccessor.deleteBySuperiorId(featureVectorIdentifier, transversalState)
+        response = JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+        LOG.info("Removing Feature Vector completed.", transversalState)   
+        return response
+    except Exception as e:
+        LOG.error(traceback.format_exc(), transversalState)
+        return JSONResponse(content=jsonable_encoder(StatusInfo(status="ERROR", message=traceback.format_exc())))
+
+@app.post("/searchBySuperiorId",
+            summary='Find a Feature Vector by Id')
+def searchByBySuperiorId(featureVectorIdentifier: FeatureVectorIdentifier, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:        
+        ids, similarities = weaviateAccessor.searchBySuperiorId(featureVectorIdentifier)
+        response = JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))
+        LOG.info("Searching By Id completed.", transversalState)   
+        return response
+    except Exception as e:
+        LOG.error(traceback.format_exc(), transversalState)
+        return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids=[], similarities=[], statusInfo=StatusInfo(status="ERROR", message=traceback.format_exc()))))
+

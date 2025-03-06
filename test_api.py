@@ -35,7 +35,8 @@ class TestWeaviateAPI(object):
         "test-ms4": "26e48461-9bee-4b62-87b9-ace09ae57e80",
         "test-ms5": "d595119e-045e-49aa-ac82-fbb66e80516c",
         "test-empty": "14ccc264-51db-44e9-b331-c8118e9ca8be",
-        "test1": "e947244a-b35d-4457-86cf-28b86fabb959"        
+        "test1": "e947244a-b35d-4457-86cf-28b86fabb959", 
+        "test-bulk-delete": "d5cadd24-b9c1-411f-ac2e-ffeb3bbeb91d"                
     }
 
     @classmethod
@@ -144,9 +145,7 @@ class TestWeaviateAPI(object):
                             }
                         )                        
         assert response.status_code == 200
-        
-        sleep(5)
-    
+            
 
     def test_InsertEmptyVector(cls):    
         response = cls.client.post("/insert",
@@ -165,6 +164,8 @@ class TestWeaviateAPI(object):
         statusInfo = StatusInfo.parse_obj(response.json())
         assert statusInfo.status == "ERROR"
         assert "new node has a vector with length 0" in statusInfo.message
+
+
 
 
     def test_InsertEmptyId(cls):    
@@ -465,3 +466,72 @@ class TestWeaviateAPI(object):
             assert searchResult.statusInfo.status == "OK"
             assert "" in searchResult.statusInfo.message            
             assert len(searchResult.ids) == 0
+
+
+    def test_BlukDataRemove(cls):
+        featureIds = []
+        for i in range(3):
+            featureId = str(uuid.uuid5(uuid.NAMESPACE_DNS, cls.ids["test-bulk-delete"]))
+            featureIds.append(featureId)
+            response = cls.client.post("/insert",
+                        headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
+                        json={
+                                "featureVectorIdentifier":{
+                                    "superiorId": cls.ids["test-bulk-delete"],
+                                    "featureId": featureId,
+                                    "sentenceType": 1,
+                                    "lang": "ja_JP",
+                                    "superiorType": 0,
+                                    "nonSentenceType": 0}, 
+                                "vector": cls.vector
+                            }
+                        )              
+            assert response.status_code == 200
+        sleep(5)
+
+        response = cls.client.post("/deleteBySuperiorId",
+                            headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
+                            json={
+                                "superiorId": cls.ids["test-bulk-delete"],
+                                "featureId": "-",
+                                "sentenceType": 1,
+                                "lang": "ja_JP",
+                                "superiorType": 0,
+                                "nonSentenceType": 0
+                            })                             
+        assert response.status_code == 200
+        statusInfo = StatusInfo.parse_obj(response.json())
+        assert statusInfo.status == "OK"
+        assert "" in statusInfo.message
+
+        response = cls.client.post("/searchBySuperiorId",
+                            headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
+                            json={
+                                "superiorId": cls.ids["test-bulk-delete"],
+                                "featureId": "-",
+                                "sentenceType": 1,
+                                "lang": "ja_JP",
+                                "superiorType": 0,
+                                "nonSentenceType": 0
+                            })                             
+        searchResult = FeatureVectorSearchResult.parse_obj(response.json())
+        assert searchResult.statusInfo.status == "OK"
+        assert "" in searchResult.statusInfo.message            
+        assert len(searchResult.ids) == 0
+
+
+        response = cls.client.post("/searchById",
+                            headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
+                            json={
+                                "superiorId": cls.ids["test-ss1"],
+                                "featureId": cls.ids["test-ss1"],
+                                "sentenceType": 1,
+                                "lang": "ja_JP",
+                                "superiorType": 0,
+                                "nonSentenceType": 0
+                            })    
+        assert response.status_code == 200
+        searchResult = FeatureVectorSearchResult.parse_obj(response.json())
+        assert searchResult.statusInfo.status == "OK"
+        assert len(searchResult.ids) > 0
+
