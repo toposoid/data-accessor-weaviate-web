@@ -10,6 +10,7 @@ RUN apt-get update \
 && cd data-accessor-weaviate-web \
 && git fetch origin ${TARGET_BRANCH} \
 && git checkout ${TARGET_BRANCH} \
+&& sed -i s/__##GIT_BRANCH##__/${TARGET_BRANCH}/g requirements.txt \
 && pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
 
 
