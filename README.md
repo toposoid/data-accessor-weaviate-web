@@ -21,7 +21,7 @@ docker-compose up -d
 ## Usage
 http://localhost:9011/docs
 
-# Note
+## Note
 * This microservice uses 9011 as the default port.
 * This microservice uses [Weaviate](https://github.com/weaviate/weaviate)
 
