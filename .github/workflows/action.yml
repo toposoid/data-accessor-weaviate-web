@@ -30,11 +30,11 @@ jobs:
         uses: crazy-max/ghaction-docker-meta@v3
         with:
           images: toposoid/${{ env.PJ_REPO }}:${{ env.PJ_VERSION }}
-      - name: Login to GHCR
+      - name: Login to CR
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.GHCR_USER }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          username: toposoid
+          password: ${{ secrets.CR_TOKEN }}
       - name: Build And Push Docker Image
         uses: docker/build-push-action@v3
         with:
