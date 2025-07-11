@@ -37,6 +37,7 @@ class TestWeaviateAPI(object):
         "test-ms5": "d595119e-045e-49aa-ac82-fbb66e80516c",
         "test-empty": "14ccc264-51db-44e9-b331-c8118e9ca8be",
         "test1": "e947244a-b35d-4457-86cf-28b86fabb959", 
+        "test-search-by-superiorid": "c666e630-5e02-11f0-b397-eaf939273568", 
         "test-bulk-delete": "d5cadd24-b9c1-411f-ac2e-ffeb3bbeb91d"                
     }
 
@@ -394,6 +395,44 @@ class TestWeaviateAPI(object):
         assert "" in searchResult.statusInfo.message
         assert searchResult.ids[0].superiorId == cls.ids["test-ss1"]
 
+    def test_SearchBySuperiorId(cls):
+        featureIds = []
+        for i in range(3):
+            featureId = str(uuid.uuid1())
+            featureIds.append(featureId)
+            response = cls.client.post("/insert",
+                        headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
+                        json={
+                                "featureVectorIdentifier":{
+                                    "superiorId": cls.ids["test-search-by-superiorid"],
+                                    "featureId": featureId,
+                                    "sentenceType": 1,
+                                    "lang": "ja_JP",
+                                    "superiorType": 0,
+                                    "nonSentenceType": 0}, 
+                                "vector": cls.vector
+                            }
+                        )              
+            assert response.status_code == 200
+        sleep(5)
+
+        response = cls.client.post("/searchBySuperiorId",
+                            headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
+                            json={
+                                "superiorId": cls.ids["test-search-by-superiorid"],
+                                "featureId": "-",
+                                "sentenceType": 1,
+                                "lang": "ja_JP",
+                                "superiorType": 0,
+                                "nonSentenceType": 0
+                            })                             
+        searchResult = FeatureVectorSearchResult.parse_obj(response.json())
+        assert searchResult.statusInfo.status == "OK"
+        assert "" in searchResult.statusInfo.message            
+        assert len(list(filter(lambda x: x.superiorId == cls.ids["test-search-by-superiorid"], searchResult.ids))) == 3
+        assert len(searchResult.ids) == 3
+
+
     def test_ActualDataRemove(cls):     
         
         vector = list(np.random.rand(768))
@@ -472,7 +511,7 @@ class TestWeaviateAPI(object):
     def test_BlukDataRemove(cls):
         featureIds = []
         for i in range(3):
-            featureId = str(uuid.uuid5(uuid.NAMESPACE_DNS, cls.ids["test-bulk-delete"]))
+            featureId = str(uuid.uuid1())
             featureIds.append(featureId)
             response = cls.client.post("/insert",
                         headers={"Content-Type": "application/json", "X_TOPOSOID_TRANSVERSAL_STATE": cls.transversalState},
@@ -535,4 +574,5 @@ class TestWeaviateAPI(object):
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
         assert len(searchResult.ids) > 0
+
 

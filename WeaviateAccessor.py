@@ -19,7 +19,7 @@ import weaviate
 from weaviate.exceptions import ObjectAlreadyExistsError
 import os
 import time
-from ToposoidCommon.model import FeatureVectorForUpdate, FeatureVectorIdentifier,TransversalState
+from ToposoidCommon.model import FeatureVectorForUpdate, FeatureVectorIdentifier, FeatureVectorSearchResult, TransversalState
 import ToposoidCommon as tc
 LOG = tc.LogUtils(__name__)
 
@@ -231,7 +231,20 @@ class WeaviateAccessor():
         if len(res["data"]['Get']['ToposoidFeature']) == 0:
             return [], []
         else:
-            return [featureVectorIdentifier], [1.0]
+            ids = []
+            dummySimilarities = []
+            for rec in res["data"]['Get']['ToposoidFeature']:
+                resFeatureVectorIdentifier = FeatureVectorIdentifier(
+                    superiorId = rec["superiorId"],
+                    featureId = rec["featureId"],
+                    sentenceType = rec["sentenceType"],
+                    lang = rec["lang"],
+                    superiorType = rec["superiorType"],
+                    nonSentenceType = rec["nonSentenceType"]
+                )
+                ids.append(resFeatureVectorIdentifier)
+                dummySimilarities.append(1.0)       
+            return ids, dummySimilarities
 
     def deleteBySuperiorId(self, featureVectorIdentifier: FeatureVectorIdentifier, transversalState: TransversalState):         
         i = 0        
