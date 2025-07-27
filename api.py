@@ -1,37 +1,43 @@
 '''
-  Copyright 2021 Linked Ideal LLC.[https://linked-ideal.com/]
+  Copyright (C) 2025  Linked Ideal LLC.[https://linked-ideal.com/]
  
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, version 3.
  
-      http://www.apache.org/licenses/LICENSE-2.0
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
  
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
- '''
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+'''
 
-from fastapi import FastAPI
-from model import FeatureVectorForUpdate, SingleFeatureVectorForSearch, FeatureVectorSearchResult, StatusInfo, SingleFeatureVectorForEasySearch, FeatureVectorIdentifier
+from fastapi import FastAPI, Header
+#from model import FeatureVectorForUpdate, SingleFeatureVectorForSearch, FeatureVectorSearchResult, StatusInfo, SingleFeatureVectorForEasySearch, FeatureVectorIdentifier, TransversalState
+from ToposoidCommon.model import FeatureVectorForUpdate, SingleFeatureVectorForSearch, FeatureVectorSearchResult, SingleFeatureVectorForEasySearch, FeatureVectorIdentifier, StatusInfo,  TransversalState
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
-
-import os
-from logging import config
-config.fileConfig('logging.conf')
-import logging
-LOG = logging.getLogger(__name__)
+#import yaml
 import traceback
 from WeaviateAccessor import WeaviateAccessor
 from middleware import ErrorHandlingMiddleware
+#from typing import Optional
+#from utils import formatMessageForLogger
+
+#from logging import config
+#config.dictConfig(yaml.load(open("logging.yml", encoding="utf-8").read(), Loader=yaml.SafeLoader))
+#import logging
+
+import ToposoidCommon as tc
+from typing import Optional
+LOG = tc.LogUtils(__name__)
 
 app = FastAPI(
     title="data-accessor-weaviate-web",
-    version="0.5-SNAPSHOT"
+    version="0.6-SNAPSHOT"
 )
 app.add_middleware(ErrorHandlingMiddleware)
 weaviateAccessor = WeaviateAccessor()
@@ -48,55 +54,74 @@ app.add_middleware(
 
 @app.post("/createSchema",
           summary='create a createSchema')
-def createSchema():
-    try:        
+def createSchema(X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:            
         weaviateAccessor.createSchema()
-        return JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+        response = JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+        LOG.info("Creating Schema completed.", transversalState)
+        return response
     except Exception as e:
-        LOG.error(traceback.format_exc())
+        LOG.error(traceback.format_exc(), transversalState)
         return JSONResponse(content=jsonable_encoder(StatusInfo(status="ERROR", message=traceback.format_exc())))
 
 
 @app.post("/insert",
             summary='Registration of feature vectors')
-def insert(featureVectorForUpdate:FeatureVectorForUpdate):
-    try:        
-        weaviateAccessor.insert(featureVectorForUpdate)        
-        return JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+def insert(featureVectorForUpdate:FeatureVectorForUpdate, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:           
+        weaviateAccessor.insert(featureVectorForUpdate)   
+        response = JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message=""))) 
+        LOG.info("Registration of feature vectors completed.", transversalState)   
+        return response
     except Exception as e:
-        LOG.error(traceback.format_exc())
+        LOG.error(traceback.format_exc(), transversalState)
         return JSONResponse(content=jsonable_encoder(StatusInfo(status="ERROR", message=traceback.format_exc())))
 
 @app.post("/upsert",
             summary='Registering and updating feature vectors')
-def insert(featureVectorForUpdate:FeatureVectorForUpdate):
-    try:        
+def insert(featureVectorForUpdate:FeatureVectorForUpdate, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:                
         weaviateAccessor.upsert(featureVectorForUpdate.id,featureVectorForUpdate.vector)
-        return JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+        response = JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+        LOG.info(f"Registration of feature vectors completed.", transversalState)   
+        return response
     except Exception as e:
-        LOG.error(traceback.format_exc())
+        LOG.error(traceback.format_exc(), transversalState)
         return JSONResponse(content=jsonable_encoder(StatusInfo(status="ERROR", message=traceback.format_exc())))
 
 @app.post("/search",
             summary='Find Single Feature Vector')
-def search(singleFeatureVectorForSearch:SingleFeatureVectorForSearch):
-    try:
+def search(singleFeatureVectorForSearch:SingleFeatureVectorForSearch, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:        
         ids, similarities = weaviateAccessor.search(singleFeatureVectorForSearch.vector, singleFeatureVectorForSearch.num)
-        return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
+        response = JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
+        featureIds = list(map(lambda x: x.featureId, ids))
+        LOG.info("id:" + str(featureIds) + " similarity:" + str(similarities), transversalState)
+        LOG.info("Searching Feature Vector completed.", transversalState)   
+        return response
     except Exception as e:
         #Exception occurs when there is no search result for some reason
-        LOG.error(traceback.format_exc())
+        LOG.error(traceback.format_exc(), transversalState)
         return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids=[], similarities=[], statusInfo=StatusInfo(status="ERROR", message=traceback.format_exc()))))
 
 @app.post("/easySearch",
             summary='Find Single Feature Vector')
-def search(singleFeatureVectorForEasySearch:SingleFeatureVectorForEasySearch):
-    try:
+def search(singleFeatureVectorForEasySearch:SingleFeatureVectorForEasySearch, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:        
         ids, similarities = weaviateAccessor.easySearch(singleFeatureVectorForEasySearch.vector, singleFeatureVectorForEasySearch.num, singleFeatureVectorForEasySearch.similarityThreshold)
-        return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
+        response = JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))        
+        featureIds = list(filter(lambda x: x.featureId, ids))
+        LOG.info("id:" + str(featureIds) + " similarity:" + str(similarities), transversalState)
+        LOG.info("Searching Feature Vector completed.", transversalState)   
+        return response
     except Exception as e:
         #Exception occurs when there is no search result for some reason
-        LOG.error(traceback.format_exc())
+        LOG.error(traceback.format_exc(), transversalState)
         return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids=[], similarities=[], statusInfo=StatusInfo(status="ERROR", message=traceback.format_exc()))))
 
 '''
@@ -114,20 +139,54 @@ def multiSearch(multiFeatureVectorForSearch:MultiFeatureVectorForSearch):
 
 @app.post("/delete",
             summary='Delete a Feature Vector')
-def delete(featureVectorIdentifier: FeatureVectorIdentifier):
-    try:
-        weaviateAccessor.delete(featureVectorIdentifier)
-        return JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+def delete(featureVectorIdentifier: FeatureVectorIdentifier, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:        
+        weaviateAccessor.delete(featureVectorIdentifier, transversalState)
+        response = JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+        LOG.info("Removing Feature Vector completed.", transversalState)   
+        return response
     except Exception as e:
-        LOG.error(traceback.format_exc())
+        LOG.error(traceback.format_exc(), transversalState)
         return JSONResponse(content=jsonable_encoder(StatusInfo(status="ERROR", message=traceback.format_exc())))
 
 @app.post("/searchById",
             summary='Find a Feature Vector by Id')
-def searchById(featureVectorIdentifier: FeatureVectorIdentifier):
-    try:
+def searchById(featureVectorIdentifier: FeatureVectorIdentifier, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:        
         ids, similarities = weaviateAccessor.searchById(featureVectorIdentifier)
-        return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))
+        response = JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))
+        LOG.info("Searching By Id completed.", transversalState)   
+        return response
     except Exception as e:
-        LOG.error(traceback.format_exc())
+        LOG.error(traceback.format_exc(), transversalState)
         return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids=[], similarities=[], statusInfo=StatusInfo(status="ERROR", message=traceback.format_exc()))))
+
+
+@app.post("/deleteBySuperiorId",
+            summary='Delete a Feature Vector')
+def deleteBySuperiorId(featureVectorIdentifier: FeatureVectorIdentifier, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:        
+        weaviateAccessor.deleteBySuperiorId(featureVectorIdentifier, transversalState)
+        response = JSONResponse(content=jsonable_encoder(StatusInfo(status="OK", message="")))
+        LOG.info("Removing Feature Vector completed.", transversalState)   
+        return response
+    except Exception as e:
+        LOG.error(traceback.format_exc(), transversalState)
+        return JSONResponse(content=jsonable_encoder(StatusInfo(status="ERROR", message=traceback.format_exc())))
+
+@app.post("/searchBySuperiorId",
+            summary='Find a Feature Vector by Id')
+def searchByBySuperiorId(featureVectorIdentifier: FeatureVectorIdentifier, X_TOPOSOID_TRANSVERSAL_STATE: Optional[str] = Header(None, convert_underscores=False)):
+    transversalState = TransversalState.parse_raw(X_TOPOSOID_TRANSVERSAL_STATE.replace("'", "\""))
+    try:        
+        ids, similarities = weaviateAccessor.searchBySuperiorId(featureVectorIdentifier)
+        response = JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids = ids, similarities = similarities, statusInfo=StatusInfo(status="OK", message=""))))
+        LOG.info("Searching By Id completed.", transversalState)   
+        return response
+    except Exception as e:
+        LOG.error(traceback.format_exc(), transversalState)
+        return JSONResponse(content=jsonable_encoder(FeatureVectorSearchResult(ids=[], similarities=[], statusInfo=StatusInfo(status="ERROR", message=traceback.format_exc()))))
+

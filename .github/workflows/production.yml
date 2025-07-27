@@ -10,10 +10,10 @@ env:
   PJ_ACTOR: toposoid
   PJ_REPO: data-accessor-weaviate-web
   PJ_BRANCH: main
-  PJ_VERSION: 0.5
+  PJ_VERSION: 0.6
 jobs:
   unit-test_data-accessor-weaviate-web:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Clone ${{ env.PJ_REPO }}
         uses: actions/checkout@v3
@@ -24,19 +24,19 @@ jobs:
             cd ${GITHUB_WORKSPACE} && cd ../
             cd ./${{ env.PJ_REPO }}
             docker build --build-arg TARGET_BRANCH=${{ env.PJ_BRANCH }} --tag ${{ env.PJ_REPO }}:${{ env.PJ_VERSION }} -f Dockerfile-workflow .
-            docker-compose -f docker-compose-workflow.yml up -d            
-            docker-compose logs
-            docker-compose -f docker-compose-workflow.yml exec -T ${{ env.PJ_REPO }} bash -c "cd ${{ env.PJ_REPO }} && pytest -v"            
+            docker compose -f docker-compose-workflow.yml up -d            
+            curl --retry 10 --retry-delay 5 --retry-all-errors -X POST -H "Content-Type: application/json" -d '{}' http://localhost:8080
+            docker compose -f docker-compose-workflow.yml exec -T ${{ env.PJ_REPO }} bash -c "cd ${{ env.PJ_REPO }} && pytest -v"            
       - name: Docker meta
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v3
         with:
           images: toposoid/${{ env.PJ_REPO }}:${{ env.PJ_VERSION }}
-      - name: Login to GHCR
+      - name: Login to CR
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.GHCR_USER }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          username: toposoid
+          password: ${{ secrets.CR_TOKEN }}
       - name: Build And Push Docker Image
         uses: docker/build-push-action@v3
         with:

@@ -1,6 +1,8 @@
-weaviate-client==3.23.2
-fastapi[all]==0.70.0
+weaviate-client==4.7.1
+fastapi[all]==0.112.2
 uvicorn[standard]==0.15.0
-pydantic==1.8.2
-pytest==6.2.5
+pydantic==2.8.2
+pytest==7.4.4
 numpy==1.23.4
+-e git+https://github.com/toposoid/toposoid-python-lib.git@__##GIT_BRANCH##__#egg=ToposoidCommon
+

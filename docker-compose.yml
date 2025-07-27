@@ -1,11 +1,12 @@
 version: '3.4'
 services:
   data-accessor-weaviate-web:
-    image: toposoid/data-accessor-weaviate-web:0.5
+    image: toposoid/data-accessor-weaviate-web:0.6
     environment:
       - TOPOSOID_WEAVIATE_HOST=weaviate
       - TOPOSOID_WEAVIATE_PORT=8080
       - TOPOSOID_WEAVIATE_SIMILARITY_THRESHOLD=0.9
+      - TOPOSOID_DATA_ACCESSOR_PORT=9011
     ports:
       - 9011:9011
     depends_on:
@@ -18,7 +19,7 @@ services:
     - '8080'
     - --scheme
     - http
-    image: semitechnologies/weaviate:1.21.2
+    image: cr.weaviate.io/semitechnologies/weaviate:1.26.3
     ports:
     - 8080:8080
     volumes:
