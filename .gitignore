@@ -165,3 +165,7 @@ logs/*
 !/logs/.gitkeep
 docker-compose-local.yml
 .python-version
+.devcontainer
+docker-compose-dev.yml
+pyproject.toml
+uv.lock
