@@ -16,6 +16,7 @@ RUN apt-get update \
 && git checkout ${TARGET_BRANCH} \
 && sed s/__##GIT_BRANCH##__/${TARGET_BRANCH}/g pyproject.toml.template > pyproject.toml \
 && uv sync
+&& uv add git+https://github.com/toposoid/toposoid-python-lib.git@${TARGET_BRANCH}#egg=ToposoidCommon
 #&& sed -i s/__##GIT_BRANCH##__/${TARGET_BRANCH}/g requirements.txt \
 #&& pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
 
