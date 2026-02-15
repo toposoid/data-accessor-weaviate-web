@@ -11,7 +11,7 @@ env:
   PJ_VERSION: 0.7-SNAPSHOT
 jobs:
   unit-test_data-accessor-weaviate-web:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone ${{ env.PJ_REPO }}
         uses: actions/checkout@v3
