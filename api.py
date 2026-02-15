@@ -37,7 +37,7 @@ LOG = tc.LogUtils(__name__)
 
 app = FastAPI(
     title="data-accessor-weaviate-web",
-    version="0.6-SNAPSHOT"
+    version="0.7-SNAPSHOT"
 )
 app.add_middleware(ErrorHandlingMiddleware)
 weaviateAccessor = WeaviateAccessor()

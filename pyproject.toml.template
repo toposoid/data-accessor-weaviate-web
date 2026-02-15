@@ -1,0 +1,17 @@
+[project]
+name = "data-accessor-weaviate-web"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[all]==0.112.2",
+    "numpy==1.23.4",
+    "pydantic==2.8.2",
+    "pytest==7.4.4",
+    "uvicorn[standard]==0.15.0",
+    "weaviate-client==4.7.1",
+]
+
+[tool.uv.sources]
+toposoid-python-lib = { git = "https://github.com/toposoid/toposoid-python-lib.git", rev = "__##GIT_BRANCH##__" }

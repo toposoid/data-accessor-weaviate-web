@@ -58,7 +58,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             }
                         )    
@@ -86,7 +87,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": changeVector1
                             }
                         )    
@@ -100,7 +102,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": changeVector2
                             }
                         )    
@@ -114,7 +117,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": changeVector3
                             }
                         )    
@@ -128,7 +132,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": changeVector3
                             }
                         )    
@@ -142,7 +147,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": changeVector4
                             }
                         )                        
@@ -159,7 +165,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": []
                             })
         assert response.status_code == 200
@@ -181,7 +188,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -197,7 +205,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -213,7 +222,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 3,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -229,7 +239,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": "",
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -245,7 +256,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": "",
                                     "lang": "",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -261,7 +273,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": "",
                                     "lang": "fr_FR",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -281,7 +294,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             })
         assert response.status_code == 200
@@ -297,7 +311,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0
                                 })
 
         assert response.status_code == 200
@@ -313,7 +328,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0
                                 })                                
         assert response.status_code == 200
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
@@ -387,7 +403,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0
                                 })                             
         assert response.status_code == 200
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
@@ -409,7 +426,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             }
                         )              
@@ -424,7 +442,8 @@ class TestWeaviateAPI(object):
                                 "sentenceType": 1,
                                 "lang": "ja_JP",
                                 "superiorType": 0,
-                                "nonSentenceType": 0
+                                "nonSentenceType": 0,
+                                "caseGroupType": 0
                             })                             
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
@@ -450,7 +469,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": vector
                             }) 
             assert response.status_code == 200
@@ -464,7 +484,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0
                                 })                             
 
             assert response.status_code == 200
@@ -482,7 +503,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0
                                 })                             
             assert response.status_code == 200
             statusInfo = StatusInfo.parse_obj(response.json())
@@ -499,7 +521,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0
                                 })    
             assert response.status_code == 200
             searchResult = FeatureVectorSearchResult.parse_obj(response.json())
@@ -522,7 +545,8 @@ class TestWeaviateAPI(object):
                                     "sentenceType": 1,
                                     "lang": "ja_JP",
                                     "superiorType": 0,
-                                    "nonSentenceType": 0}, 
+                                    "nonSentenceType": 0,
+                                    "caseGroupType": 0}, 
                                 "vector": cls.vector
                             }
                         )              
@@ -537,7 +561,8 @@ class TestWeaviateAPI(object):
                                 "sentenceType": 1,
                                 "lang": "ja_JP",
                                 "superiorType": 0,
-                                "nonSentenceType": 0
+                                "nonSentenceType": 0,
+                                "caseGroupType": 0
                             })                             
         assert response.status_code == 200
         statusInfo = StatusInfo.parse_obj(response.json())
@@ -552,7 +577,8 @@ class TestWeaviateAPI(object):
                                 "sentenceType": 1,
                                 "lang": "ja_JP",
                                 "superiorType": 0,
-                                "nonSentenceType": 0
+                                "nonSentenceType": 0,
+                                "caseGroupType": 0
                             })                             
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
         assert searchResult.statusInfo.status == "OK"
@@ -568,7 +594,8 @@ class TestWeaviateAPI(object):
                                 "sentenceType": 1,
                                 "lang": "ja_JP",
                                 "superiorType": 0,
-                                "nonSentenceType": 0
+                                "nonSentenceType": 0,
+                                "caseGroupType": 0
                             })    
         assert response.status_code == 200
         searchResult = FeatureVectorSearchResult.parse_obj(response.json())
